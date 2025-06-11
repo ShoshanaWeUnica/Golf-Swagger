@@ -1,0 +1,1904 @@
+
+openapi: 3.0.3
+info:
+  title: GOLF HUB - Documentation
+  description: |-
+    This API allows interaction with a product catalog and inventory management system. It provides endpoints for retrieving product information and managing stock levels.
+  # termsOfService: http://swagger.io/terms/
+  contact:
+    email: weunica@weunica.com
+  # license:
+    # name: Apache 2.0
+    # url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+# externalDocs:
+  # description: Find out more about Swagger
+  # url: http://swagger.io
+# servers:
+#   - url: https://petstore3.swagger.io/api/v3
+tags:
+  - name: Catalog
+
+  - name: Inventory
+    
+  - name: Registration & Members
+    
+  - name: Orders
+  
+  - name: Discounts & Coupons
+  
+  - name: Gift Card
+  
+  - name: Catagories
+    
+paths:
+
+  
+  /catalog:
+    get:
+      tags:
+        - Catalog
+      summary: / Returns the entire catalog
+      description:   Returns the entire catalog
+      operationId: getCatalog
+      x-label: "Retrieve all products"  # תווית לקריאות
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ExtendedProduct'
+  /catalog/brand/{brandId}:
+    get:
+      tags:
+      - Catalog
+      summary: / Receives a brand and returns the entire catalog for that brand.
+      description: Receives a brand and returns the entire catalog for that brand.
+      parameters:
+      - in: path
+        name: brandId
+        schema:
+          type: integer # או string, בהתאם לסוג ה-ID של המותג
+        required: true
+        description: ID of the brand to retrieve the catalog for.
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ExtendedProduct'
+  /catalog/sync/new:
+    get:
+      tags:
+        - Catalog
+      summary: Returns new products.
+      description: Returns new products – either without the 'siteSpecificProperties' attribute or with at least one variant missing the attribute.
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  new:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ExtendedProduct'
+  /catalog/sync/updated:
+    get:
+      tags:
+        - Catalog
+      summary: Returns updated products starting from the given time.
+      description: Receives a date and time and returns the updated products starting from the given time.
+      parameters:
+        - in: query
+          name: fromDateTime
+          schema:
+            type: string
+            format: date-time
+          required: true
+          description: The date and time to start retrieving new products from.
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+
+                type: object
+                properties:
+                  updated:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ExtendedProduct'
+  /catalog/sync/deleted:
+    get:
+      tags:
+        - Catalog
+      summary: Returns deleted products starting from the given time.
+      description: Receives a date and time and returns deleted products starting from the given time.
+      parameters:
+        - in: query
+          name: fromDateTime
+          schema:
+            type: string
+            format: date-time 
+          required: true
+          description: The date and time to start retrieving new products from.
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+
+                type: object
+                properties:
+                  deleted:
+                    type: array
+                    items:
+                     type: string
+                     description: Product IDs that were deleted.
+                      
+  
+  /catalog/update:
+    post:
+      tags:
+      - Catalog
+      summary: Updates the HUB with a list of products with site specific propertie.
+      description: Updates the HUB with a list of new products with their Wix IDs.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                requestId:
+                  type: string
+                totalSuccess:
+                  type: number
+                totalFailed:
+                  type: number
+                successProducts:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      handle:
+                        type: string
+                      siteSpecificProperties:
+                        type: object
+                        properties:
+                          id:
+                           type: string
+                          revision:
+                            type: integer
+                      variants:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              sku:
+                                type: string
+                              barcode:
+                                type: string
+                              siteSpecificProperties:
+                                type: object
+                                properties:
+                                  id:
+                                   type: string
+                failedProducts:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      handle: 
+                        type: string
+                      message:
+                        type: string
+                      
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                    example: "Update All products"
+
+
+  
+  /inventory:
+    get:
+      tags:
+      - Inventory    
+      summary: Returns the current inventory for the entire catalog.
+      description: Returns the current inventory for the entire catalog, but only for items that have changed since the provided timestamp.
+      parameters:
+        - in: query
+          name: fromDateTime
+          schema:
+            type: string
+            format: date-time  # Important to specify the date and time format
+          required: true
+          description: The date and time to start retrieving inventory from.
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  new:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BaseInventoryItem'  
+                  updated:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ExtendedInventoryItem' 
+        '204':
+           description: No inventory updates since the provided timestamp
+                      
+  /inventory/update:
+    post:
+      tags:
+      - Inventory    
+      summary: Updates the HUB with a list of inventory items with site specific properties.
+      description: Updates the HUB with a list of inventory items with site specific properties.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                inventoryItems:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/ExtendedInventoryItem' # שימוש ב ProductInventoryWithId
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                    example: "Update All Inventory Items"
+  /inventory/{productId}/{variantId}:
+    get:
+      tags:
+      - Inventory   
+      summary: Checks the current inventory level of a product's variant.
+      description: Checks the current inventory level of a product's variant.
+      parameters:
+        - in: path
+          name: productId
+          schema:
+            type: string
+          required: true
+          description: ID of the product to check.
+        - in: path
+          name: variantId
+          schema:
+            type: string
+          required: true
+          description: ID of the variant to check.
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  quantity:
+                    type: integer
+                    description: Quantity in stock
+  /inventory/branches/{productId}/{variantId}:
+    get:
+      tags:
+      - Inventory   
+      summary: Retrieves the current inventory level of a product's variant, in all branches.
+      description: Retrieves the current inventory level of a product's variant, in all branches.
+      parameters:
+        - in: path
+          name: productId
+          schema:
+            type: string
+          required: true
+          description: ID of the product to check.
+        - in: path
+          name: variantId
+          schema:
+            type: string
+          required: true
+          description: ID of the variant to check.
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BranchInventory'
+   
+  /api/coupons/{phone}:
+    get:
+      tags:
+      - Discounts & Coupons    
+      summary: Return from the HUB coupons for a specific user by his phone.
+      description: Returns from the HUB coupons for a specific user by his phone.
+      parameters:
+        - name: phone
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the golf club member.
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  activeCoupons:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Coupon'      
+  /api/coupons/redeem:
+    post:
+      tags:
+      - Discounts & Coupons  
+      summary: Reports to HUB about using a coupon.
+      description: Reports to HUB about using a coupon.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                couponId:
+                  type: string
+                  description: The ID of the coupon.
+                userId:
+                  type: string
+                  description: The ID of the user.
+                dateAndTime:
+                  type: string
+                  format: date-time
+                  description: The date and time the coupon was redeemed.
+              required:
+                - couponId
+                - userId
+                - dateAndTime
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"                    
+
+
+
+  /member/{phone}:
+    get:
+      tags:
+      - Registration & Members
+      summary: Get golf club members's data by phone. 
+      description: Get golf club members's data by phone.
+      parameters:
+        - name: phone
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Phone number of the site member
+      responses:
+        '200':
+          description: Member found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  clubs:
+                    type: array
+                    items:
+                      type: string
+                      example: 'w - isracard'
+                  golfId:
+                    type: string
+                  firstName:
+                    type: string
+                    example: "John"
+                  lastName:
+                    type: string
+                    example: "Doe"
+                  email:
+                    type: string
+                    format: email
+                    example: "john.doe@example.com"
+                  identityNumber:
+                    type: string
+                    example: "326645955"
+                  dateOfBirth:
+                    type: string
+                    format: date
+                    description: "Date of Birth (YYYY-MM-DD)"
+                  phoneNumber:
+                    type: string
+                    example: "+1234567890"
+                  coupons:
+                    type: array
+                    items:
+                      type: string
+                  wPoints:
+                    type: number
+                  mailingApproval:
+                    type: boolean
+                  siteSpecificProperties:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        description: site SiteMember ID
+        '404':
+          description: Member not registered
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Member not registered"
+  
+  /member/club/{phone}:
+    post:
+      tags:
+      - Registration & Members 
+      summary: Creates or updates a club member profile based on phone and additional identifiers
+      description: Creates or updates a club member profile based on phone and additional identifiers
+      parameters:
+        - name: phone
+          in: path
+          required: true
+          schema:
+            type: string
+            description: Phone number of the site member
+      requestBody:
+        content:
+          application/json:
+            schema:
+             type: object
+             properties:
+              phone:
+                type: string
+              email:
+                type: string
+                format: email
+              firstName:
+                type: string
+              lastName: 
+                type: string
+              identityNumber:
+                type: string
+              bitrhDate:
+                type: string
+                format: date
+              mailingApproval:
+                type: boolean
+              siteSpecificProperties:
+                type: object
+                properties:
+                  id:
+                    type: string
+      responses:
+        '201':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  golfId:
+                    type: string
+                  clubs:
+                    type: array
+                    items:
+                      type: string
+                      example: 'golf'
+                  phone:
+                    type: string
+                  email:
+                    type: string
+                    format: email
+                  firstName:
+                    type: string
+                  lastName: 
+                    type: string
+                  identityNumber:
+                    type: string
+                  bitrhDate:
+                    type: string
+                    format: date
+                  mailingApproval:
+                    type: boolean
+                  coupons:
+                    type: array
+                    items:
+                      type: string
+                  wPoints:
+                    type: number
+                  siteSpecificProperties:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                          
+
+  /member/{identityNumber}:
+    get:
+      tags:
+      - Registration & Members
+      summary: Get golf club members's data by identity number. 
+      description: Get golf club members's data by phone.
+      parameters:
+        - name: identityNumber
+          in: path
+          required: true
+          schema:
+            type: string
+          description: identity number
+      responses:
+        '200':
+          description: Member found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  golfId:
+                    type: string
+                  clubs:
+                    type: array
+                    items:
+                      type: string
+                      example: 'Golf'
+                  firstName:
+                    type: string
+                    example: "John"
+                  lastName:
+                    type: string
+                    example: "Doe"
+                  email:
+                    type: string
+                    format: email
+                    example: "john.doe@example.com"
+                  identityNumber:
+                    type: string
+                    example: "326645955"
+                  dateOfBirth:
+                    type: string
+                    format: date
+                    description: "Date of Birth (YYYY-MM-DD)"
+                  phoneNumber:
+                    type: string
+                    example: "+1234567890"
+                  coupons:
+                    type: array
+                    items:
+                      type: string
+                  wPoints:
+                    type: number
+                  mailingApproval:
+                    type: boolean
+                  siteSpecificProperties:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        description: site SiteMember ID
+        '404':
+          description: Member not registered
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Member not registered"
+  /members/update/{phone}:
+    patch:
+      tags:
+      - Registration & Members
+      summary: Update site member details
+      description: Update the details of an existing site member in the HUB.
+      parameters:
+        - name: phone
+          in: path
+          required: true
+          schema:
+            type: string
+          description: site member phone
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExtendedSiteMember'
+      responses:
+        '200':
+          description: Member updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  golfId:
+                    type: string
+                  clubs:
+                    type: array
+                    items:
+                      type: string
+                      example: 'Golf'
+                  firstName:
+                    type: string
+                    example: "John"
+                  lastName:
+                    type: string
+                    example: "Doe"
+                  email:
+                    type: string
+                    format: email
+                    example: "john.doe@example.com"
+                  identityNumber:
+                    type: string
+                    example: "326645955"
+                  dateOfBirth:
+                    type: string
+                    format: date
+                    description: "Date of Birth (YYYY-MM-DD)"
+                  phoneNumber:
+                    type: string
+                    example: "+1234567890"
+                  coupons:
+                    type: array
+                    items:
+                      type: string
+                  wPoints:
+                    type: number
+                  mailingApproval:
+                    type: boolean
+                  siteSpecificProperties:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        description: site SiteMember ID
+        '400':
+          description: Invalid request data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Invalid request data"
+        '404':
+          description: Member not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Member not found"
+                    
+                    
+                    
+  /giftcard/getBalance/{gifcardCode}:
+    get:
+      tags:
+      - Gift Card
+      summary: Retrieves giftcard balance.
+      description: Retrieves giftcard balance.
+      parameters:
+        - in: path
+          name: gifcardCode
+          schema:
+            type: string
+          required: true
+          description: order number
+      responses:
+        '200':
+          description: Balance found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cardNumber:
+                    type: string
+                    example: "GC1234567890"
+                  balance:
+                    type: number
+                    format: float
+                    example: 75.5
+                  currency:
+                    type: string
+                    example: "ILS"
+                  status:
+                    type: string
+                    enum: [active, zero_balance]
+                    example: "active" 
+        '404':
+          description: Gift card not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Gift card not found"
+                    
+  /giftcards/redeem:
+    post:
+      tags:
+      - Gift Card
+      summary: Redeem gift card
+      description: Redeem gift card
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [cardNumber, amount]
+              properties:
+                cardNumber:
+                  type: string
+                  example: "GC1234567890"
+                amount:
+                  type: number
+                  example: 20.0
+                orderId:
+                  type: string
+      responses:
+        '200':
+          description: Redemption successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  transactionId:
+                    type: string
+                  cardNumber:
+                    type: string
+                  redeemedAmount:
+                    type: number
+                  remainingBalance:
+                    type: number
+                  currency:
+                    type: string
+        '400':
+          description: Insufficient balance or invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Insufficient balance"
+        '404':
+          description: Gift card not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Gift card not found"
+          
+  /giftcards/void:
+    post:
+      tags: 
+      - Gift Card
+      summary: Void gift card redemption
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [transactionId]
+              properties:
+                transactionId:
+                  type: string
+      responses:
+        '200':
+          description: Void successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cardNumber:
+                    type: string
+                  voidedAmount:
+                    type: number
+                  newBalance:
+                    type: number
+        '400':
+          description: Invalid transaction or amount
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Transaction already voided or not found"
+        '404':
+          description: Gift card not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Gift card not found" 
+  /categories:
+    get:
+      tags:
+      - Catagories
+      summary: / Returns all the categories
+      description: Returns all the categories
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BaseCategory'
+  /categories/sync:
+    get:
+      tags:
+      - Catagories    
+      summary: Returns new categories starting from the given time.
+      description: Receives a date and time and returns the new categories starting from the given time.
+      parameters:
+        - in: query
+          name: fromDateTime
+          schema:
+            type: string
+            format: date-time  # חשוב לציין את הפורמט של התאריך והשעה
+          required: true
+          description: The date and time to start retrieving new categories from.
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  new:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BaseCategory' 
+                  updated:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ExtendedCategory' 
+                  deleted:
+                    type: array
+                    items:
+                      type: string
+                      description: Category IDs that were deleted.
+  /categories/update:
+    post:
+      tags:
+      - Catagories    
+      summary: Updates the HUB with a list of new categories with their Wix IDs.
+      description: Updates the HUB with a list of new categories with their Wix IDs.
+      requestBody:
+        content:
+          application/json:
+            schema: 
+              type: array
+              items:
+                $ref: '#/components/schemas/ExtendedCategory'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                    example: "Update All categories"
+  /order/{phone}:
+    get:
+      tags:
+        - Orders
+      summary: Retrieves the old orders history for a member using their phone number.
+      description: Retrieves the order history for a member using their phone number.
+      parameters:
+        - in: path
+          name: phone
+          schema:
+            type: string
+          required: true
+          description: Phone number or email of the member to retrieve order history.
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  orders:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        orderDate:
+                          type: string
+                          format: date
+                        deliveryDate: 
+                          type: string
+                          format: date
+                        orderNumber:
+                          type: string
+                        brand:
+                          type: string
+                        orderAmount:
+                          type: string
+                          example: "550.70"
+                        deliveryAmount:
+                          type: string
+                          example: "30.0"
+                  
+  /order/update:
+    post:
+      tags:
+      - Orders
+      summary: Sends all order details, including the buyer's information, after a purchase is made, along with invoice number and shipping tracking number.
+      description: Sends all order details, including the buyer's information, after a purchase is made, along with invoice number and shipping tracking number.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderDetails'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                    example: "Order details successfully sent for update"
+                  orderId:
+                    type: string
+                    example: "OMD123456"
+                  invoiceNumber:
+                    type: string
+                    example: "INV587654"
+                  shippingTrackingNumber:
+                    type: string
+                    example: "SHIP123456789"                  
+                required:
+                  - status
+                  - message
+                  - orderId
+                  - invoiceNumber
+                  - shippingTrackingNumber    
+                  
+                  
+  /order/{orderIdentifier}:
+    get:
+      tags:
+      - Orders
+      summary: Retrieves order status.
+      description: Retrieves order status.
+      parameters:
+        - in: path
+          name: orderIdentifier
+          schema:
+            type: string
+          required: true
+          description: order number
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "waiting"
+  
+
+
+components:
+  schemas:
+    BaseProduct2:
+            type: object
+            properties:
+              handle:
+                type: string
+                description: Product handle
+              name:
+                type: string
+                description: Product Name
+              description:
+                type: string
+                description: Product Description
+              variants:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    sku:
+                      type: string
+                      description: Variant SKU
+                    price:
+                        type: string
+                        description: Variant string
+                  required:
+                    - sku
+                    - price
+            required:
+              - handle
+              - name
+              - description
+              - variants
+    BaseProduct:
+      type: object
+      properties:
+        handle:
+          type: string
+          description: מזהה ייחודי למוצר (ידידותי ל-URL)
+        name:
+          type: string
+          description: שם המוצר
+        description:
+          type: string
+          description: תיאור מפורט של המוצר
+        options:
+          type: array
+          items:
+            $ref: '#/components/schemas/Option'
+          description: מערך של אפשרויות מוצר (לדוגמה, מידה, צבע)
+        extraInfo:
+          $ref: '#/components/schemas/ExtraInfo'
+          description: מידע נוסף על המוצר
+        variants:
+          type: array
+          items:
+            $ref: '#/components/schemas/Variant'
+          description: מערך של וריאציות שונות של המוצר (לדוגמה, שילוב של מידה וצבע)
+        visible:
+          type: boolean
+          description: האם המוצר גלוי בחנות
+        collection:
+          type: string
+          description: שם הקולקציה שאליה המוצר משתייך
+        chain:
+          type: string
+          description: שם הרשת או המותג המשווק
+        brand:
+          type: string
+          description: שם המותג של המוצר
+        department:
+          type: string
+          description: שם המחלקה אליה המוצר משתייך
+        mainDepartment:
+          type: string
+          description: שם המחלקה הראשית אליה המוצר משתייך
+        discountPercentage:
+          type: string
+
+          description: אחוז ההנחה על המוצר (אם יש)
+        ovveridePriceDescription:
+          type: string
+          description: תיאור מחיר מיוחד (אם מחליף את המחיר הרגיל)
+        primaryFamily:
+          type: string
+          description: משפחה ראשית של המוצר
+        primaryFamilyDescription:
+          type: string
+          description: תיאור המשפחה הראשית של המוצר
+        family:
+          type: string
+          description: משפחה משנית של המוצר
+        familyDescription:
+          type: string
+          description: תיאור המשפחה המשנית של המוצר
+        category:
+          type: string
+          description: קטגוריה ספציפית של המוצר
+        categoryDescription:
+          type: string
+          description: תיאור הקטגוריה של המוצר
+        subCategory:
+          type: string
+          description: תת-קטגוריה של המוצר
+        subCategoryDescription:
+          type: string
+          description: תיאור תת-הקטגוריה של המוצר
+        primaryCategory1:
+          type: string
+        category1:
+          type: string
+        subcategory1:
+          type: string
+        subSubcategory1:
+          type: string
+        primaryCategory2:
+          type: string
+        category2:
+          type: string
+        subcategory2:
+          type: string
+        subSubcategory2:
+          type: string
+        primaryCategory3:
+          type: string
+        category3:
+          type: string
+        subcategory3:
+          type: string
+        subSubcategory3:
+          type: string
+        primaryCategory4:
+          type: string
+        category4:
+          type: string
+        subcategory4:
+          type: string
+        subSubcategory4:
+          type: string
+        primaryCategory5:
+          type: string
+        category5:
+          type: string
+        subcategory5:
+          type: string
+        subSubcategory5:
+          type: string
+        primaryCategory6:
+          type: string
+        category6:
+          type: string
+        subcategory6:
+          type: string
+        subSubcategory6:
+          type: string
+        primaryCategory7:
+          type: string
+        category7:
+          type: string
+        subcategory7:
+          type: string
+        subSubcategory7:
+          type: string
+        primaryCategory8:
+          type: string
+        category8:
+          type: string
+        subcategory8:
+          type: string
+        subSubcategory8:
+          type: string
+      required:
+        - handle
+        - name
+        - description
+        - options
+        - extraInfo
+        - variants
+        - visible
+        - collection
+        - chain
+        - brand
+        - department
+        - mainDepartment
+    Choice:
+      type: object
+      properties:
+        name:
+          type: string
+        hexCode:
+          type: string
+        colorGroup:
+          type: string
+        iconFileName:
+          type: string
+      required:
+        - name
+    Option:
+      type: object
+      properties:
+        name:
+          type: string
+        choices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Choice'
+      required:
+        - name
+        - choices
+    Variant:
+      type: object
+      properties:
+        sku:
+          type: string
+        barcode:
+          type: string
+        basePrice:
+          type: string
+        salePrice:
+          type: string
+        golfPrice:
+          type: string
+        discountLabel:
+          type: string
+        choices:
+          type: array
+          items:
+            type: object
+            properties:
+              optionName:
+                type: string
+              choiceName:
+                type: string
+        sizeContent:
+          type: string
+        restock:
+          type: string
+      required:
+        - sku
+        - barcode
+        - basePrice
+        - salePrice
+        - golfPrice
+        - choices
+    ExtraInfo:
+      type: object
+      properties:
+        density:
+          type: string
+        weight:
+          type: array
+          items:
+            type: string
+        length:
+          type: array
+          items:
+            type: string
+        width:
+          type: array
+          items:
+            type: string
+        depth:
+          type: array
+          items:
+            type: string
+        height:
+          type: array
+          items:
+            type: string
+        volume:
+          type: array
+          items:
+            type: string
+        fabricWeight:
+          type: string
+        fabricComposition:
+          type: string
+        careInstructions:
+          type: array
+          items:
+            type: string
+        seriesNumber:
+          type: string
+        seriesName:
+          type: string
+        seriesDescription:
+          type: string
+        groupNumber:
+          type: string
+        groupName:
+          type: string
+        componentType:
+          type: array
+          items:
+            type: string
+        materialCompositopn:
+          type: array
+          items:
+            type: string
+        fragile:
+          type: boolean
+        countryOfOrigin:
+          type: string
+        siteWeight:
+          type: string
+        pricePer100:
+          type: string
+        unit100:
+          type: string
+          description: "ml / g"
+        mixAndMatchId:
+          type: string
+        searchKeyWords:
+          type: array
+          items:
+            type: string
+        icons:
+          type: array
+          items:
+            type: string
+          description: "wix media id"
+        technology:
+          type: string
+        schoolSymbol:
+          type: boolean
+        fixedSentence:
+          type: string
+        comingSoon:
+          type: string
+        shopTheLook:
+          type: string
+        lables:
+          type: array
+          items:
+            type: string
+        sitePackaging:
+          type: string
+        expectedArrivalDate:
+          type: string
+        purchaseOrders:
+          type: string
+        restockUpdate:
+          type: string
+        innerQuantity:
+          type: string
+        innerPromotion:
+          type: string
+      required:
+        - groupNumber
+        - groupName
+        - materialCompositopn
+        - countryOfOrigin
+        - fixedSentence
+  
+  
+    Contact:
+      type: object
+      properties:
+        firstName:
+          type: string
+          example: "John"
+        lastName:
+          type: string
+          example: "Doe"
+        email:
+          type: string
+          format: email
+          example: "john.doe@example.com"
+        phoneNumber:
+          type: string
+          example: "+1234567890"
+        golfId:
+          type: string
+          example: "G12345"
+        siteSpecificProperties:
+          type: object
+          properties:
+            siteContactId:
+              type: string
+              description: site SiteContact ID
+          required:
+            - siteContactId
+      required:
+        - firstName
+        - lastName
+
+    OrderDetails:
+      type: object
+      properties:
+        orderId:
+         type: string
+         example: "ORD123456"
+        purchaseFlowId:
+         type: string
+         example: "flow_789"
+        cartId:
+         type: string
+         example: "cart_456"
+        status:
+         type: string
+         example: "completed"
+        paymentStatus:
+         type: string
+         example: "paid"
+        fulfillmentStatus:
+         type: string
+         example: "fulfilled"
+        totalAmount:
+         type: number
+         format: float
+         example: 299.99
+        totalDiscount:
+         type: number
+         format: float
+         example: 20.00
+        paymentMethod:
+         type: string
+         example: "CREDIT_CARD"
+        currency:
+         type: string
+         example: "ILS"
+        buyer:
+         type: object
+         properties:
+           email:
+             type: string
+             format: email
+             example: "user@example.com"
+           phone:
+            type: string
+           firstName:
+            type: string
+           lastName: 
+            type: string
+           siteSpecificProperties:
+             type: object
+             properties:
+              id:
+                type: string
+           golfMemberId:
+             type: string
+             example: "m56789"
+         required:
+           - email
+        address:
+         type: object
+         additionalProperties: true
+         description: Shipping address object (structure depends on site)
+        contactDetails:
+         type: object
+         additionalProperties: true
+         description: Recipient contact details (e.g., phone, name)
+        lineItems:
+         type: array
+         items:
+           type: object
+           properties:
+             sku:
+               type: string
+               nullable: true
+               example: "SKU123"
+             name:
+               type: string
+               example: "Golf Shirt"
+             quantity:
+               type: integer
+               example: 2
+             price:
+               type: number
+               format: float
+               example: 149.99
+             lineItemPrice:
+               type: number
+               format: float
+               example: 299.98
+             totalDiscount:
+               type: number
+               format: float
+               example: 15.00
+             totalPrice:
+               type: number
+               format: float
+               example: 284.98
+             image:
+               type: string
+               nullable: true
+               example: "https://example.com/image.jpg"
+             customLineItem:
+               type: boolean
+               example: false
+             variantId:
+               type: string
+               example: "v98765"
+             options:
+               type: array
+               items:
+                 type: object
+                 properties:
+                   option:
+                     type: string
+                     example: "Color"
+                   selection:
+                     type: string
+                     nullable: true
+                     example: "Blue"
+
+    BaseSiteMember:
+      type: object
+      properties:
+        firstName:
+          type: string
+          example: "John"
+        lastName:
+          type: string
+          example: "Doe"
+        email:
+          type: string
+          format: email
+          example: "john.doe@example.com"
+        identityNumber:
+          type: string
+          example: "326645955"
+        dateOfBirth:
+          type: string
+          format: date
+          description: "Date of Birth (YYYY-MM-DD)"
+        phoneNumber:
+          type: string
+          example: "+1234567890"        
+        siteSpecificProperties:
+          type: object
+          properties:
+            id:
+              type: string
+              description: site SiteMember ID
+          required:
+            - siteMemberId
+      required:
+        - phoneNumber
+        - siteSpecificProperties
+
+    ExtendedSiteMember:
+      allOf:
+        - $ref: '#/components/schemas/BaseSiteMember'
+      
+
+        
+        
+        
+    BaseGolfClubMember:
+      type: object
+      properties:
+        identityNumber:
+          type: string
+          example: "123456789"
+        firstName:
+          type: string
+          example: "John"
+        lastName:
+          type: string
+          example: "Doe"
+        email:
+          type: string
+          format: email
+          example: "john.doe@example.com"
+        phoneNumber:
+          type: string
+          example: "+1234567890"
+        siteSpecificProperties:
+          type: object
+          properties:
+            clubMemberId:
+              type: string
+              description: site GolfClubMember ID
+          required:
+            - clubMemberId
+      required:
+        - identityNumber
+        - firstName
+        - lastName
+        - email
+        - phoneNumber
+        - siteSpecificProperties
+
+    ExtendedGolfClubMember:
+      allOf:
+        - $ref: '#/components/schemas/BaseGolfClubMember'
+    LineItem:
+      type: object
+      properties:
+        productId:
+          type: string
+          example: "12345"
+        productName:
+          type: string
+          example: "Golf Club Set"
+        quantity:
+          type: integer
+          example: 1
+        price:
+          type: number
+          format: float
+          example: 299.99
+      required:
+        - productId
+        - productName
+        - quantity
+        - price
+    BranchInventory:
+      type: object
+      properties:
+        SKU:
+          type: string
+          description: Stock Keeping Unit
+        inventory:
+          type: array
+          items:
+            type: object
+            properties:
+              branchId:
+                type: string
+                description: ID of the branch
+              branchName:
+                type: string
+                description: Name of the branch
+              isExist:
+                type: boolean
+                description: Is the item in stock at this branch?
+              quantityInStock:
+                type: integer
+                description: Quantity in stock at this branch
+            required:
+              - branchId
+              - branchName
+              - isExist
+
+      required:
+        - SKU
+        - inventory
+    Coupon:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Coupon name.
+        code:
+          type: string
+          description: Coupon code.
+        type:
+          type: string
+          description: Coupon code.
+        startTime:
+          type: integer
+          description: Start time (timestamp).
+        expirationTime:
+          type: integer
+          description: Expiration time (timestamp).
+      required:
+        - _id
+        - name
+        - code
+        - startTime
+        - expirationTime
+    BaseInventoryItem:
+      type: object
+      properties:
+        siteSpecificProperties:
+          type: object
+          properties:
+            productId:
+              type: string
+              description: site Product ID
+            variantId:
+              type: string
+              description: site Variant ID
+          required:
+            - productId
+            - variantId
+        SKU:
+          type: string
+          description: Stock Keeping Unit
+        quantity:
+          type: integer
+          description: Quantity in stock
+        preorderInfo:
+          type: object
+          properties:
+            enabled:
+              type: boolean
+              description: Is preordering enabled?
+            limit:
+              type: integer
+              description: Maximum number of preorder allowed
+      required:
+        - siteSpecificProperties
+        - SKU
+        - quantity
+        - preorderInfo
+    ExtendedInventoryItem:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/BaseInventoryItem'
+      properties:
+        siteSpecificProperties:
+          type: object
+          properties:
+            id:
+              type: string
+              description: site Inventory ID
+            revision:
+              type: string
+              description: site Revision number
+          required:
+            - id
+            - productId
+            - variantId
+            - revision
+      required:
+        - siteSpecificProperties
+   
+   
+   
+    ExtendedProduct:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/BaseProduct'
+      properties:
+        siteSpecificProperties:
+          type: object
+          properties:
+            id:
+              type: string
+              description: Product ID
+            revision:
+              type: string
+              description: Product Revision
+          required:
+            - id
+            - revision
+        variants:
+          type: array
+          items:
+            type: object
+            properties:
+              siteSpecificProperties:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: site Variant ID
+                required:
+                  - id
+            required:
+              - siteSpecificProperties
+      required:
+        - siteSpecific
+
+   
+
+
+  
+    BaseCategory:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Category ID
+        name:
+          type: string
+          description: Category Name
+        image:
+          type: integer
+          description: Category Image
+        parentId:
+          type: string
+          description: Category Parent ID
+      required:
+        - id
+        - name
+        - image
+        - parentId
+     
+     
+    ExtendedCategory:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/BaseCategory'
+      properties:
+        siteSpecificProperties:
+          type: object
+          properties:
+            id:
+              type: string
+              description: Site Category Id
+            revision:
+              type: string
+              description: Site Category Revision
+            parentId:
+              type: string
+              description: Site Category ParentId
+            
+          required:
+            - id
+            - parentId
+            - revision
+      required:
+        - siteSpecificProperties   
+  
+  securitySchemes:
+    petstoreAuth:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: https://petstore3.swagger.io/oauth/authorize
+          scopes:
+            write:pets: modify pets in your account
+            read:pets: read your pets
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header
