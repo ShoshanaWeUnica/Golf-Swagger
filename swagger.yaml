@@ -1393,7 +1393,12 @@ components:
         icons:
           type: array
           items:
-            type: string
+            type: object
+            properties:
+              mediaId: 
+                type: string
+              text:
+                type: string
           description: "wix media id"
         technology:
           type: string
@@ -1418,7 +1423,7 @@ components:
         - groupName
         - materialCompositopn
         - countryOfOrigin
-        - fixedSentence
+
   
   
     Contact:
