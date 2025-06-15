@@ -1280,13 +1280,6 @@ components:
         mainDepartment:
           type: string
           description: שם המחלקה הראשית אליה המוצר משתייך
-        discountPercentage:
-          type: string
-
-          description: אחוז ההנחה על המוצר (אם יש)
-        ovveridePriceDescription:
-          type: string
-          description: תיאור מחיר מיוחד (אם מחליף את המחיר הרגיל)
         primaryFamily:
           type: string
           description: משפחה ראשית של המוצר
@@ -1299,6 +1292,8 @@ components:
         familyDescription:
           type: string
           description: תיאור המשפחה המשנית של המוצר
+        mainCategory:
+          type: string
         category:
           type: string
           description: קטגוריה ספציפית של המוצר
@@ -1426,8 +1421,6 @@ components:
           type: string
         golfPrice:
           type: string
-        discountLabel:
-          type: string
         choices:
           type: array
           items:
@@ -1440,18 +1433,6 @@ components:
         sizeContent:
           type: string
         restock:
-          type: string
-      required:
-        - sku
-        - barcode
-        - basePrice
-        - salePrice
-        - golfPrice
-        - choices
-    ExtraInfo:
-      type: object
-      properties:
-        density:
           type: string
         weight:
           type: array
@@ -1473,6 +1454,18 @@ components:
           type: array
           items:
             type: string
+      required:
+        - sku
+        - barcode
+        - basePrice
+        - salePrice
+        - golfPrice
+        - choices
+    ExtraInfo:
+      type: object
+      properties:
+        density:
+          type: string
         volume:
           type: array
           items:
@@ -1523,14 +1516,17 @@ components:
         icons:
           type: array
           items:
-            type: string
+            type: object
+            properties:
+              mediaId: 
+                type: string
+              text:
+                type: string
           description: "wix media id"
         technology:
           type: string
         schoolSymbol:
           type: boolean
-        fixedSentence:
-          type: string
         comingSoon:
           type: string
         shopTheLook:
@@ -1540,12 +1536,6 @@ components:
           items:
             type: string
         sitePackaging:
-          type: string
-        expectedArrivalDate:
-          type: string
-        purchaseOrders:
-          type: string
-        restockUpdate:
           type: string
         innerQuantity:
           type: string
