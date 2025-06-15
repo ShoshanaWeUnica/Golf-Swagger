@@ -461,7 +461,23 @@ paths:
                   coupons:
                     type: array
                     items:
-                      type: string
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                          description: Coupon name.
+                        code:
+                          type: string
+                          description: Coupon code.
+                        type:
+                          type: string
+                          description: Coupon code.
+                        startTime:
+                          type: integer
+                          description: Start time (timestamp).
+                        expirationTime:
+                          type: integer
+                          description: Expiration time (timestamp).
                   wPoints:
                     type: number
                   mailingApproval:
@@ -735,7 +751,114 @@ paths:
                     example: "Member not found"
                     
                     
-                    
+  /points/redeem:
+    post:
+      tags: 
+      - W Points
+      summary: Redeem W Club points
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                  description: User ID number (Teudat Zehut)
+                  example: "123456789"
+                amount:
+                  type: number
+                  description: Number of points to redeem
+                  example: 100
+      responses:
+        '200':
+          description: Points redeemed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userId:
+                    type: string
+                  redeemedPoints:
+                    type: number
+                  remainingPoints:
+                    type: number
+        '400':
+          description: Invalid request or insufficient points
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Insufficient points"
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "User not found"  
+  /points/refund:
+    post:
+      tags: 
+      - W Points
+      summary: Refund W Club points
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                  description: User ID number (Teudat Zehut)
+                  example: "123456789"
+                amount:
+                  type: number
+                  description: Number of points to refund
+                  example: 100
+      responses:
+        '200':
+          description: Points refunded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userId:
+                    type: string
+                  redeemedPoints:
+                    type: number
+                  remainingPoints:
+                    type: number
+        '400':
+          description: Invalid request 
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "User not found"
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "User not found" 
   /giftcard/getBalance/{gifcardCode}:
     get:
       tags:
@@ -1423,7 +1546,7 @@ components:
         - groupName
         - materialCompositopn
         - countryOfOrigin
-
+        - fixedSentence
   
   
     Contact:
