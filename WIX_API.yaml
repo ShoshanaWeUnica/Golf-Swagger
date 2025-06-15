@@ -1,0 +1,681 @@
+
+openapi: 3.0.3
+info:
+  title: WIX API - Documentation
+  description: |-
+    This API allows interaction with coupon and category management within a Wix-based application.
+  # termsOfService: http://swagger.io/terms/
+  contact:
+    email: unica@unica.com
+
+  version: 1.0.0
+
+tags:
+  - name: Category
+
+  - name: Coupon
+
+  - name: GiftCard
+  
+  - name: Discount
+  
+paths:
+
+
+    /_functions/category/create:
+        post:
+          tags:
+          - Category
+          summary: Creates new categories.
+          description: Creates new categories.
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/BaseCategory'
+          responses:
+            '201':
+              description: Categories created successfully
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/ExtendedCategory'
+    /_functions/category/update:
+        patch:
+            tags:
+            - Category
+            summary: Updates existing categories.
+            description: Updates existing categories.
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/BaseCategory'
+            responses:
+                '200':
+                    description: Categories updated successfully
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ExtendedCategory'
+    /_functions/category/delete/{categoryIdentifier}:
+        delete:
+          tags:
+          - Category
+          summary: Deletes a category by its ID.
+          description: Deletes a category by its ID.
+          parameters:
+            - name: categoryIdentifier
+              in: path
+              required: true
+              description: The ID of the category to delete.
+              schema:
+                type: string
+          responses:
+            '204':
+              description: Category deleted successfully.
+              
+    /_functions/coupons/redeem/{couponIdentifier}:
+      delete:
+            tags:
+            - Coupon
+            summary: Redeem a coupon.
+            description: Redeem a coupon.
+            parameters:
+              - name: couponIdentifier
+                in: path
+                required: true
+                description: The ID of the coupon to delete.
+                schema:
+                  type: string
+            responses:
+              '204':
+                description: Coupon deleted successfully.   
+                              
+    /_functions/giftCard/redeem:
+        patch:
+          tags:
+          - GiftCard
+          summary:  Redeems a gift card.
+          description:  Redeems a gift card.
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/BaseGiftCard'
+          responses:
+            '200':
+              description: Gift card redeemed successfully.
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                        description: Indicates whether the gift card was redeemed successfully.                             
+    /_functions/giftCard/create:
+      post:
+        tags:
+          - GiftCard
+        summary: Creates a new giftCard / TBD
+        description: Creates a new giftCard.
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseGiftCard' 
+        responses:
+          '201':
+            description: GiftCard created successfully.
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ExtendedGiftCard'                               
+                  
+    /_functions/discounts/create:
+      post:
+        tags:
+          - Discount
+        summary: Creates a new discount. / TBD
+        description: Creates a new discount.
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                # במקום $ref, נשתמש בדוגמה לאובייקט
+                example: 
+                  {
+                    "id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+                    "revision": "1",
+                    "createdDate": "2023-10-26T12:00:00.000Z",
+                    "updatedDate": "2023-10-26T12:00:00.000Z",
+                    "active": true,
+                    "name": "Golf club discount",
+                    "activeTimeInfo": {
+                      "start": "2023-10-26T12:00:00.000Z",
+                      "end": "2023-11-26T12:00:00.000Z"
+                    },
+                    "discounts": {
+                      "values": [
+                        {
+                          "targetType": "SPECIFIC_ITEMS",
+                          "discountType": "FIXED_AMOUNT",
+                          "fixedAmount": "100",
+                          "specificItemsInfo": {
+                            "scopes": [
+                              {
+                                "_id": "WIXSTORES_DEFAULT_ALL_ITEMS_SCOPE_ID",
+                                "type": "CATALOG_ITEM",
+                                "catalogItemFilter": {
+                                  "catalogAppId": "WIXSTORES_APP_ID"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    },
+                    "status": "LIVE",
+                    "usageCount": 0,
+                    "trigger": {
+                      "triggerType": "SUBTOTAL_RANGE",
+                      "subtotalRange": {
+                        "from": "300",
+                        "scopes": [
+                          {
+                            "_id": "WIXSTORES_DEFAULT_ALL_ITEMS_SCOPE_ID",
+                            "type": "CATALOG_ITEM",
+                            "catalogItemFilter": {
+                              "catalogAppId": "WIXSTORES_APP_ID"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+        responses:
+          '201':
+            description: Discount created successfully.
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ExtendedDiscount'                    
+
+components:
+  schemas:
+    TriggerTypeEnum:
+        type: string
+        enum:
+          - UNDEFINED
+          - AND
+          - SUBTOTAL_RANGE
+          - ITEM_QUANTITY_RANGE
+          - CUSTOM
+          - OR
+    BaseGiftCard:
+      type: object
+      properties:
+        code: 
+          type: string
+          maxLength: 30
+          description: Gift card obfuscated code. 
+        amount:
+          $ref: '#/components/schemas/Amount'
+          description: Gift card amount. 
+      required:
+        - obfuscatedCode
+        - amount
+        - orderId
+    ExtendedGiftCard:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/BaseGiftCard'
+      properties:
+        siteSpecificProperties:
+          type: object
+          properties:
+            id:
+              type: string
+              description: Site Category Id
+          required:
+            - id
+      required:
+        - siteSpecificProperties   
+    Amount:
+      type: object
+      properties:
+        value:
+          type: string
+          format: decimal
+          example: 50
+          description: Monetary amount. Decimal string with a period as a decimal separator (e.g., 3.99). Optionally, a single (-) to indicate a negative amount.
+      required:
+        - value
+    BaseCoupon:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: Coupon ID.
+        name:
+          type: string
+          description: Coupon name.
+        code:
+          type: string
+          description: Coupon code.
+        startTime:
+          type: integer
+          description: Start time (timestamp).
+        expirationTime:
+          type: integer
+          description: Expiration time (timestamp).
+        usageLimit:
+          type: integer
+          description: Usage limit.
+        limitedToOneItem:
+          type: boolean
+          description: Limit to one item.
+        limitPerCustomer:
+          type: integer
+          description: Limit per customer.
+        active:
+          type: boolean
+          description: Is active.
+        scope:
+          type: object
+          properties:
+            namespace:
+              type: string
+              description: Namespace.
+            group:
+              type: string
+              description: Group.
+            entityId:
+              type: string
+              description: Entity ID.
+        moneyOffAmount:
+                type: integer
+                description: Money off amount.
+      # more Extend fields per coupon
+      required:
+        - _id
+        - name
+        - code
+        - startTime
+        - expirationTime
+        - usageLimit
+        - limitedToOneItem
+        - limitPerCustomer
+        - active
+        - scope
+    ExtendedCoupon:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/BaseCoupon'
+      properties:
+        siteSpecificProperties:
+          type: object
+          properties:
+            id:
+              type: string
+              description: Site Category Id
+          required:
+            - id
+      required:
+        - siteSpecificProperties   
+    BaseCategory:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Category ID
+        name:
+          type: string
+          description: Category Name
+        image:
+          type: integer
+          description: Category Image
+        parentId:
+          type: string
+          description: Category Parent ID
+      required:
+        - id
+        - name
+        - image
+        - parentId
+    ExtendedCategory:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/BaseCategory'
+      properties:
+        siteSpecificProperties:
+          type: object
+          properties:
+            id:
+              type: string
+              description: Site Category Id
+            revision:
+              type: string
+              description: Site Category Revision
+            parentId:
+              type: string
+              description: Site Category ParentId
+            
+          required:
+            - id
+            - parentId
+            - revision
+      required:
+        - siteSpecificProperties   
+    ExtendedDiscount:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/BaseDiscount'
+      properties:
+        siteSpecificProperties:
+          type: object
+          properties:
+            id:
+              type: string
+              description: Site Discount Id
+            
+          required:
+            - id
+      required:
+        - siteSpecificProperties   
+    BaseDiscount:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Discount ID.
+        revision:
+          type: string
+          description: Revision number.
+        createdDate:
+          type: string
+          format: date-time
+          description: Creation date and time.
+        updatedDate:
+          type: string
+          format: date-time
+          description: Last update date and time.
+        active:
+          type: boolean
+          description: Is the discount active.
+        name:
+          type: string
+          description: Discount name.
+        activeTimeInfo:
+          type: object
+          properties:
+            start:
+              type: string
+              format: date-time
+              description: Start time of the discount.
+            end:
+              type: string
+              format: date-time
+              description: End time of the discount.
+        discounts:
+          $ref: '#/components/schemas/DiscountDefinition'
+        status:
+          type: string
+          enum:
+            - UNDEFINED
+            - LIVE
+            - EXPIRED
+            - PENDING
+          description: Discount rule status.
+        usageCount:
+          type: integer
+          description: Usage count.
+        trigger:
+          $ref: '#/components/schemas/Trigger'
+
+    DiscountDefinition:
+          type: object
+          properties:
+            values:
+              type: array
+              items:
+                type: object
+                properties:
+                  targetType:
+                    type: string
+                    enum:
+                      - UNDEFINED
+                      - SPECIFIC_ITEMS
+                      - BUY_X_GET_Y
+                    description: Target type of the discount.
+                  specificItemsInfo:
+                    type: object
+                    properties:
+                      scopes:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Scope' 
+                  discountType:
+                    type: string
+                    description: Discount type.
+                  percentage:
+                    type: integer
+                    description: Discount percentage.
+                  fixedAmount:
+                    type: string
+                    format: decimalValue
+                    pattern: "^[0-9]+([.][0-9]{1,4})?$"
+                    description: Amount to discount from original price.
+                  fixedPrice:
+                    type: string
+                    format: decimalValue
+                    pattern: "^[0-9]+([.][0-9]{1,4})?$"
+                    description: Fixed price. Line item will be fixed to this price.
+                oneOf:  # Only one of these discount types can be present
+                - required:
+                    - percentage
+                - required:
+                    - fixedAmount
+                - required:
+                    - fixedPrice
+    Trigger:
+      type: object
+      properties:
+        triggerType:
+          $ref: '#/components/schemas/TriggerTypeEnum' 
+          description: Trigger type.
+        and:
+          $ref: '#/components/schemas/AndTrigger'
+          description: Custom trigger.
+        or:
+          $ref: '#/components/schemas/OrTrigger'
+          description: Custom trigger.
+        customTrigger:
+          $ref: '#/components/schemas/CustomTrigger'
+          description: Custom trigger.
+        subtotalRange:
+          $ref: '#/components/schemas/SubtotalRangeTrigger'
+          description: Subtotal trigger range.
+        itemQuantityRange:
+          $ref: '#/components/schemas/ItemQuantityRangeTrigger'
+          description: Item quantity trigger range.
+      oneOf:
+        - required:
+            - and
+        - required:
+            - or
+        - required:
+            - customTrigger
+        - required:
+            - subtotalRange
+        - required:
+            - itemQuantityRange
+    AndTrigger:
+      type: object
+      properties:
+        triggers:
+          type: array
+          items:
+            type: object
+            properties:
+              triggerType:
+                 $ref: '#/components/schemas/TriggerTypeEnum' 
+                 description: Trigger type.
+              and:
+                $ref: '#/components/schemas/AndTrigger'
+                description: Custom trigger.
+              or:
+                $ref: '#/components/schemas/OrTrigger'
+                description: Custom trigger.
+              customTrigger:
+                $ref: '#/components/schemas/CustomTrigger'
+                description: Custom trigger.
+              subtotalRange:
+                $ref: '#/components/schemas/SubtotalRangeTrigger'
+                description: Subtotal trigger range.
+              itemQuantityRange:
+                $ref: '#/components/schemas/ItemQuantityRangeTrigger'
+                description: Item quantity trigger range.
+      oneOf:
+          - required:
+              - and
+          - required:
+              - or
+          - required:
+              - customTrigger
+          - required:
+              - subtotalRange
+          - required:
+              - itemQuantityRange
+      description: Chain multiple triggers with the and operator.
+    OrTrigger:
+      type: object
+      properties:
+        triggers:
+          type: array
+          items:
+            type: object
+            properties:
+              triggerType:
+                 $ref: '#/components/schemas/TriggerTypeEnum' 
+                 description: Trigger type.
+              and:
+                $ref: '#/components/schemas/AndTrigger'
+                description: Custom trigger.
+              or:
+                $ref: '#/components/schemas/OrTrigger'
+                description: Custom trigger.
+              customTrigger:
+                $ref: '#/components/schemas/CustomTrigger'
+                description: Custom trigger.
+              subtotalRange:
+                $ref: '#/components/schemas/SubtotalRangeTrigger'
+                description: Subtotal trigger range.
+              itemQuantityRange:
+                $ref: '#/components/schemas/ItemQuantityRangeTrigger'
+                description: Item quantity trigger range.
+      oneOf:
+          - required:
+              - and
+          - required:
+              - or
+          - required:
+              - customTrigger
+          - required:
+              - subtotalRange
+          - required:
+              - itemQuantityRange
+      description: Chain multiple triggers with the or operator.
+    CustomTrigger:
+      type: object
+      properties:
+        id:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Trigger ID.
+        appId:
+          type: string
+          format: guid
+          description: ID of the app that created the trigger.
+      description: Custom trigger.
+    SubtotalRangeTrigger:
+      type: object
+      properties:
+        scopes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Scope'
+        from:
+          type: string
+          description: Minimum subtotal.
+        to:
+          type: string
+          description: Maximum subtotal (nullable).
+    ItemQuantityRangeTrigger:
+      type: object
+      properties:
+        scopes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Scope'
+        from:
+          type: integer
+          description: Minimum quantity.
+        to:
+          type: string
+          description: Maximum quantity .
+    Scope:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Scope ID.
+        type:
+          type: string
+          description: Scope type.
+        catalogItemFilter:
+          type: object
+          properties:
+            catalogAppId:
+              type: string
+              description: Catalog app ID.
+            catalogItemIds:
+              type: array
+              items:
+                type: string
+                description: Catalog item ID.
+        customFilter:
+              type: object
+              properties:
+                appId:
+                  type: string
+                  format: guid
+                  description: Custom filter app ID, when relevant.
+                params:
+                  type: object
+                # description:  ""Custom filter in { "key": "value" } form. For      example, an array of collectionIDs: { ["collectionId": "12345"], ["collectionId": "67890"] }"".
+      oneOf:
+          - required:
+              - catalogItemFilter
+          - required:
+              - customFilter
+  securitySchemes:
+    petstoreAuth:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: https://petstore3.swagger.io/oauth/authorize
+          scopes:
+            write:pets: modify pets in your account
+            read:pets: read your pets
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header
