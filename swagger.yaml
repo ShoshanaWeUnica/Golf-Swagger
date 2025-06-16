@@ -817,6 +817,8 @@ paths:
                   type: number
                   description: Number of points to redeem
                   example: 100
+                orderId:
+                  type: string
       responses:
         '200':
           description: Points redeemed successfully
@@ -831,6 +833,8 @@ paths:
                     type: number
                   remainingPoints:
                     type: number
+                  currency:
+                    type: string
                   transactionId:
                     type: string
         '400':
@@ -879,10 +883,12 @@ paths:
                 properties:
                   userId:
                     type: string
-                  redeemedPoints:
-                    type: number
                   remainingPoints:
                     type: number
+                  transactionId: 
+                    type: string
+                  currency:
+                    type: string
         '400':
           description: Invalid request 
           content:
