@@ -750,7 +750,53 @@ paths:
                     type: string
                     example: "Member not found"
                     
-                    
+  /points/getBalance/{identityNumber}:
+    get:
+      tags:
+      - W Points
+      summary: Get W Club points
+      parameters:
+        - name: identityNumber
+          in: path
+          required: true
+          schema:
+            type: string
+          description: identity number
+      responses:
+        '200':
+          description: Points redeemed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userId:
+                    type: string
+                  availablePoints:
+                    type: number
+                  currency:
+                    type: string
+                    example: "ILS"
+        '400':
+          description: Invalid request or insufficient points
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Insufficient points"
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "User not found"  
   /points/redeem:
     post:
       tags: 
@@ -785,6 +831,8 @@ paths:
                     type: number
                   remainingPoints:
                     type: number
+                  transactionId:
+                    type: string
         '400':
           description: Invalid request or insufficient points
           content:
@@ -817,14 +865,10 @@ paths:
             schema:
               type: object
               properties:
-                userId:
+                transactionId:
                   type: string
-                  description: User ID number (Teudat Zehut)
+                  description: Transaction Id
                   example: "123456789"
-                amount:
-                  type: number
-                  description: Number of points to refund
-                  example: 100
       responses:
         '200':
           description: Points refunded successfully
@@ -1950,10 +1994,6 @@ components:
               - siteSpecificProperties
       required:
         - siteSpecific
-
-   
-
-
   
     BaseCategory:
       type: object
