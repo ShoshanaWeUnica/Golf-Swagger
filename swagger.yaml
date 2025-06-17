@@ -969,13 +969,13 @@ paths:
               type: object
               required: [cardNumber, amount]
               properties:
-                cardNumber:
+                cardId:
                   type: string
                   example: "GC1234567890"
                 amount:
                   type: number
                   example: 20.0
-                orderId:
+                transactionId:
                   type: string
       responses:
         '200':
@@ -1045,6 +1045,8 @@ paths:
                     type: number
                   newBalance:
                     type: number
+                  currency:
+                    type: string
         '400':
           description: Invalid transaction or amount
           content:
