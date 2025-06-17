@@ -77,14 +77,14 @@ paths:
             '204':
               description: Category deleted successfully.
               
-    /_functions/coupons/redeem/{couponIdentifier}:
+    /_functions/redeem/{code}:
       delete:
             tags:
             - Coupon
             summary: Redeem a coupon.
             description: Redeem a coupon.
             parameters:
-              - name: couponIdentifier
+              - name: code
                 in: path
                 required: true
                 description: The ID of the coupon to delete.
