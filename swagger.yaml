@@ -1550,9 +1550,7 @@ components:
           items: 
             type: string
         searchKeyWords:
-          type: array
-          items:
-            type: string
+          type: string
         icons:
           type: array
           items:
