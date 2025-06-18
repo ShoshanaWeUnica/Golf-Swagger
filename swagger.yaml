@@ -1482,30 +1482,18 @@ components:
                 type: string
               choiceName:
                 type: string
-        sizeContent:
-          type: string
         restock:
           type: string
         weight:
-          type: array
-          items:
-            type: string
+          type: string
         length:
-          type: array
-          items:
-            type: string
+          type: string
         width:
-          type: array
-          items:
-            type: string
+          type: string
         depth:
-          type: array
-          items:
-            type: string
+          type: string
         height:
-          type: array
-          items:
-            type: string
+          type: string
       required:
         - sku
         - barcode
@@ -1519,9 +1507,7 @@ components:
         density:
           type: string
         volume:
-          type: array
-          items:
-            type: string
+          type: string
         fabricWeight:
           type: string
         fabricComposition:
@@ -1530,6 +1516,8 @@ components:
           type: array
           items:
             type: string
+        symbolCareInstruction:
+          type: string
         seriesNumber:
           type: string
         seriesName:
@@ -1541,12 +1529,8 @@ components:
         groupName:
           type: string
         componentType:
-          type: array
-          items:
-            type: string
+          type: string
         materialCompositopn:
-          type: array
-          items:
             type: string
         fragile:
           type: boolean
@@ -1555,12 +1539,16 @@ components:
         siteWeight:
           type: string
         pricePer100:
-          type: string
+          type: number
         unit100:
           type: string
           description: "ml / g"
         mixAndMatchId:
           type: string
+        sizeContent:
+          type: array
+          items: 
+            type: string
         searchKeyWords:
           type: array
           items:
@@ -1575,14 +1563,14 @@ components:
               text:
                 type: string
           description: "wix media id"
-        technology:
-          type: string
+        # technology:
+        #   type: string
         schoolSymbol:
           type: boolean
         comingSoon:
-          type: string
-        shopTheLook:
-          type: string
+          type: boolean
+        # shopTheLook:
+        #   type: string
         lables:
           type: array
           items:
