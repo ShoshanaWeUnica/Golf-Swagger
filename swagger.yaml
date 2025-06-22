@@ -1314,6 +1314,10 @@ components:
           items:
             $ref: '#/components/schemas/Variant'
           description: מערך של וריאציות שונות של המוצר (לדוגמה, שילוב של מידה וצבע)
+        sizesExtraData:
+          type: array
+          items:
+            $ref: '#/components/schemas/Sizes'
         visible:
           type: boolean
           description: האם המוצר גלוי בחנות
@@ -1471,8 +1475,6 @@ components:
           type: string
         salePrice:
           type: string
-        golfPrice:
-          type: string
         choices:
           type: array
           items:
@@ -1484,22 +1486,11 @@ components:
                 type: string
         restock:
           type: string
-        weight:
-          type: string
-        length:
-          type: string
-        width:
-          type: string
-        depth:
-          type: string
-        height:
-          type: string
       required:
         - sku
         - barcode
         - basePrice
         - salePrice
-        - golfPrice
         - choices
     ExtraInfo:
       type: object
@@ -1585,7 +1576,24 @@ components:
         - materialCompositopn
         - countryOfOrigin
         - fixedSentence
-  
+    Sizes:
+      type: object
+      properties:
+        choiceName:
+          type: string
+          example: סט יחיד 90X200
+        golfClubPrice:
+          type: number
+        weight:
+          type: string
+        length:
+          type: string
+        width:
+          type: string
+        depth:
+          type: string
+        height:
+          type: string
   
     Contact:
       type: object
