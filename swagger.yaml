@@ -480,6 +480,8 @@ paths:
                           description: Expiration time (timestamp).
                   wPoints:
                     type: number
+                  wPointsExpiringSoon:
+                    type: number
                   mailingApproval:
                     type: boolean
                   siteSpecificProperties:
@@ -764,7 +766,7 @@ paths:
           description: identity number
       responses:
         '200':
-          description: Points redeemed successfully
+          description: Points for member
           content:
             application/json:
               schema:
@@ -773,6 +775,8 @@ paths:
                   userId:
                     type: string
                   availablePoints:
+                    type: number
+                  WPointsExpiringSoon:
                     type: number
                   currency:
                     type: string
@@ -909,6 +913,62 @@ paths:
                   error:
                     type: string
                     example: "User not found" 
+  /points/refundAmount:
+    post:
+      tags: 
+        - W Points
+      summary: Refund a specific amount of W Club points
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                transactionId:
+                  type: string
+                  description: Transaction ID
+                amount:
+                  type: number
+                  description: Amount of points to refund
+                  example: 150
+      responses:
+        '200':
+          description: Specific amount of points refunded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userId:
+                    type: string
+                  refundedAmount:
+                    type: number
+                  remainingPoints:
+                    type: number
+                  currency:
+                    type: string
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invalid amount"
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "User not found"
+
   /giftcard/getBalance/{gifcardCode}:
     get:
       tags:
