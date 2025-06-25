@@ -180,6 +180,8 @@ paths:
                            type: string
                           revision:
                             type: integer
+                          areImagesAssigned:
+                            type: boolean
                       variants:
                           type: array
                           items:
@@ -219,8 +221,75 @@ paths:
                     type: string
                     example: "Update All products"
 
-
-  
+  /catalog/products/{productId}/image-association:
+    post:
+      tags:
+      - Catalog
+      summary: Product image association update
+      description: Product image association update.
+      parameters:
+        - in: path
+          name: productId
+          schema: 
+            type: string
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                imageFileName:
+                  type: string
+                      
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                    example: "success"
+  /catalog/products/visibility{productId}:
+    post:
+      tags:
+      - Catalog
+      summary: Product visibility status update
+      description: Product visibility status update
+      parameters:
+        - in: path
+          name: productId
+          schema: 
+            type: string
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                visible:
+                  type: boolean
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                    example: "success"
   /inventory:
     get:
       tags:
@@ -1378,8 +1447,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Sizes'
-        visible:
-          type: boolean
           description: האם המוצר גלוי בחנות
         collection:
           type: string
@@ -1493,7 +1560,6 @@ components:
         - options
         - extraInfo
         - variants
-        - visible
         - collection
         - chain
         - brand

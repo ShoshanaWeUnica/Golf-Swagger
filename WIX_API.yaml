@@ -14,13 +14,40 @@ tags:
   - name: Category
 
   - name: Coupon
-
-  - name: GiftCard
   
-  - name: Discount
-  
+  - name: Catalog
 paths:
-
+    /_functions/visibility:
+        post:
+          tags:
+          - Catalog
+          summary: Product visibility status update.
+          description: Product visibility status update.
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    products:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          productId: 
+                            type: string
+                          visible:
+                            type: boolean
+                    
+                    
+          responses:
+            '201':
+              description: Categories created successfully
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/ExtendedCategory'
 
     /_functions/category/create:
         post:
