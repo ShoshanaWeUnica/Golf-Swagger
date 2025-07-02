@@ -1318,82 +1318,11 @@ components:
           description: תיאור המשפחה המשנית של המוצר
         mainCategory:
           type: string
-        category:
-          type: string
-          description: קטגוריה ספציפית של המוצר
-        categoryDescription:
-          type: string
-          description: תיאור הקטגוריה של המוצר
-        subCategory:
-          type: string
-          description: תת-קטגוריה של המוצר
-        subCategoryDescription:
-          type: string
-          description: תיאור תת-הקטגוריה של המוצר
-        primaryCategory1:
-          type: string
-        category1:
-          type: string
-        subcategory1:
-          type: string
-        subSubcategory1:
-          type: string
-        primaryCategory2:
-          type: string
-        category2:
-          type: string
-        subcategory2:
-          type: string
-        subSubcategory2:
-          type: string
-        primaryCategory3:
-          type: string
-        category3:
-          type: string
-        subcategory3:
-          type: string
-        subSubcategory3:
-          type: string
-        primaryCategory4:
-          type: string
-        category4:
-          type: string
-        subcategory4:
-          type: string
-        subSubcategory4:
-          type: string
-        primaryCategory5:
-          type: string
-        category5:
-          type: string
-        subcategory5:
-          type: string
-        subSubcategory5:
-          type: string
-        primaryCategory6:
-          type: string
-        category6:
-          type: string
-        subcategory6:
-          type: string
-        subSubcategory6:
-          type: string
-        primaryCategory7:
-          type: string
-        category7:
-          type: string
-        subcategory7:
-          type: string
-        subSubcategory7:
-          type: string
-        primaryCategory8:
-          type: string
-        category8:
-          type: string
-        subcategory8:
-          type: string
-        subSubcategory8:
-          type: string
+        categories: 
+          type: array
+          items:
+            type: string
+            
       required:
         - handle
         - name
