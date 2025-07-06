@@ -62,7 +62,7 @@ paths:
                 schema:
                   $ref: '#/components/schemas/BaseCategory'
           responses:
-            '201':
+            '200':
               description: Categories created successfully
               content:
                 application/json:
@@ -79,7 +79,7 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/BaseCategory'
+                            $ref: '#/components/schemas/ExtendedCategory'
             responses:
                 '200':
                     description: Categories updated successfully
@@ -87,14 +87,14 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/ExtendedCategory'
-    /_functions/category/delete/{categoryIdentifier}:
+    /_functions/category/delete/{categoryId}:
         delete:
           tags:
           - Category
           summary: Deletes a category by its ID.
           description: Deletes a category by its ID.
           parameters:
-            - name: categoryIdentifier
+            - name: categoryId
               in: path
               required: true
               description: The ID of the category to delete.
@@ -349,14 +349,13 @@ components:
     BaseCategory:
       type: object
       properties:
-        id:
-          type: integer
-          description: Category ID
         name:
           type: string
           description: Category Name
+        description:
+          type: string
         image:
-          type: integer
+          type: string
           description: Category Image
         parentId:
           type: string
@@ -380,9 +379,6 @@ components:
             revision:
               type: string
               description: Site Category Revision
-            parentId:
-              type: string
-              description: Site Category ParentId
             
           required:
             - id

@@ -27,8 +27,6 @@ tags:
   
   - name: Discounts & Coupons
   
-  - name: Catagories
-    
 paths:
 
   
@@ -1037,83 +1035,7 @@ paths:
                     example: "User not found"
 
   
-  /categories:
-    get:
-      tags:
-      - Catagories
-      summary: / Returns all the categories
-      description: Returns all the categories
-      responses:
-        '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/BaseCategory'
-  /categories/sync:
-    get:
-      tags:
-      - Catagories    
-      summary: Returns new categories starting from the given time.
-      description: Receives a date and time and returns the new categories starting from the given time.
-      parameters:
-        - in: query
-          name: fromDateTime
-          schema:
-            type: string
-            format: date-time  # חשוב לציין את הפורמט של התאריך והשעה
-          required: true
-          description: The date and time to start retrieving new categories from.
-      responses:
-        '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  new:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/BaseCategory' 
-                  updated:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/ExtendedCategory' 
-                  deleted:
-                    type: array
-                    items:
-                      type: string
-                      description: Category IDs that were deleted.
-  /categories/update:
-    post:
-      tags:
-      - Catagories    
-      summary: Updates the HUB with a list of new categories with their Wix IDs.
-      description: Updates the HUB with a list of new categories with their Wix IDs.
-      requestBody:
-        content:
-          application/json:
-            schema: 
-              type: array
-              items:
-                $ref: '#/components/schemas/ExtendedCategory'
-      responses:
-        '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: "success"
-                  message:
-                    type: string
-                    example: "Update All categories"
+  
   /order/{phone}:
     get:
       tags:
