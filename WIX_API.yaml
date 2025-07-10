@@ -49,7 +49,7 @@ paths:
                   schema:
                     $ref: '#/components/schemas/ExtendedCategory'
 
-    /_functions/category/create:
+    /_functions/createCategory:
         post:
           tags:
           - Category
@@ -68,7 +68,7 @@ paths:
                 application/json:
                   schema:
                     $ref: '#/components/schemas/ExtendedCategory'
-    /_functions/category/update:
+    /_functions/updateCategory:
         post:
             tags:
             - Category
@@ -87,7 +87,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/ExtendedCategory'
-    /_functions/category/delete/{categoryId}:
+    /_functions/deleteCategory/{categoryId}:
         delete:
           tags:
           - Category
