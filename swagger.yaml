@@ -178,6 +178,18 @@ paths:
                             type: integer
                           areImagesAssigned:
                             type: boolean
+                          choicesImages:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                choiceName:
+                                  type: string
+                                linkedMedia:
+                                  type: array
+                                  items:
+                                    type: string
+                                    example: "6bb6e5_64728f6dd4d449b5a327ecd01c64f688~mv2.png"
                       variants:
                           type: array
                           items:
@@ -1270,6 +1282,11 @@ components:
           type: string
         iconFileName:
           type: string
+        linkedMedia:
+          type: array
+          items:
+            type: string
+            example: "6bb6e5_64728f6dd4d449b5a327ecd01c64f688~mv2.png"
       required:
         - name
     Option:
@@ -1316,8 +1333,6 @@ components:
       type: object
       properties:
         density:
-          type: string
-        volume:
           type: string
         fabricWeight:
           type: string
@@ -1417,6 +1432,8 @@ components:
         depth:
           type: string
         height:
+          type: string
+        volume:
           type: string
   
     Contact:
