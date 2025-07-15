@@ -18,6 +18,8 @@ info:
 #   - url: https://petstore3.swagger.io/api/v3
 tags:
   - name: Catalog
+  
+  - name: Category
 
   - name: Inventory
     
@@ -29,7 +31,30 @@ tags:
   
 paths:
 
-  
+  /categories:
+      get:
+            tags:
+            - Category
+            summary: Get all wix categories with products.
+            description: Get all wix categorues with ptoducts.
+            responses:
+              '200':
+                description: successful operation
+                content:
+                  application/json:
+                    schema:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          categoryId:
+                            type: string
+                          products:
+                            type: array
+                            items:
+                              type: string
+                          
+               
   /catalog:
     get:
       tags:
@@ -1211,25 +1236,14 @@ components:
           items:
             $ref: '#/components/schemas/Sizes'
           description: האם המוצר גלוי בחנות
-        collection:
-          type: string
         chain:
           type: string
           description: שם הרשת או המותג המשווק
         brand:
           type: string
           description: שם המותג של המוצר
-        department:
-          type: string
-        mainDepartment:
-          type: string
-        family:
-          type: string
-          description: משפחה משנית של המוצר
         mainCategory:
           type: string
-        categories: 
-          type: array
           items:
             type: string
             
@@ -1240,11 +1254,8 @@ components:
         - options
         - extraInfo
         - variants
-        - collection
         - chain
         - brand
-        - department
-        - mainDepartment
     Choice:
       type: object
       properties:
@@ -1321,10 +1332,6 @@ components:
           type: string
         seriesDescription:
           type: string
-        groupNumber:
-          type: string
-        groupName:
-          type: string
         componentType:
           type: string
         materialCompositopn:
@@ -1381,8 +1388,6 @@ components:
         innerPromotion:
           type: string
       required:
-        - groupNumber
-        - groupName
         - materialCompositopn
         - countryOfOrigin
         - fixedSentence
