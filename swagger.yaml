@@ -178,18 +178,6 @@ paths:
                             type: integer
                           areImagesAssigned:
                             type: boolean
-                          choicesImages:
-                            type: array
-                            items:
-                              type: object
-                              properties:
-                                choiceName:
-                                  type: string
-                                linkedMedia:
-                                  type: array
-                                  items:
-                                    type: string
-                                    example: "6bb6e5_64728f6dd4d449b5a327ecd01c64f688~mv2.png"
                       variants:
                           type: array
                           items:
@@ -1225,7 +1213,6 @@ components:
           description: האם המוצר גלוי בחנות
         collection:
           type: string
-          description: שם הקולקציה שאליה המוצר משתייך
         chain:
           type: string
           description: שם הרשת או המותג המשווק
@@ -1234,22 +1221,11 @@ components:
           description: שם המותג של המוצר
         department:
           type: string
-          description: שם המחלקה אליה המוצר משתייך
         mainDepartment:
           type: string
-          description: שם המחלקה הראשית אליה המוצר משתייך
-        primaryFamily:
-          type: string
-          description: משפחה ראשית של המוצר
-        primaryFamilyDescription:
-          type: string
-          description: תיאור המשפחה הראשית של המוצר
         family:
           type: string
           description: משפחה משנית של המוצר
-        familyDescription:
-          type: string
-          description: תיאור המשפחה המשנית של המוצר
         mainCategory:
           type: string
         categories: 
@@ -1282,11 +1258,6 @@ components:
           type: string
         iconFileName:
           type: string
-        linkedMedia:
-          type: array
-          items:
-            type: string
-            example: "6bb6e5_64728f6dd4d449b5a327ecd01c64f688~mv2.png"
       required:
         - name
     Option:
@@ -1422,7 +1393,7 @@ components:
           type: string
           example: סט יחיד 90X200
         golfClubPrice:
-          type: number
+          type: string
         weight:
           type: string
         length:
